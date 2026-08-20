@@ -18,214 +18,27 @@
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
-            --accent: #10b981;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Readex Pro', system-ui, -apple-system, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 30px 15px;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 850px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 5px;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-icon {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), #a855f7);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-        }
-
-        .brand h1 {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .search-box {
-            position: relative;
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-field {
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 20px;
-            color: var(--text);
-            font-size: 16px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: white;
-            border: none;
-            border-radius: 14px;
-            padding: 0 28px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: transform 0.1s, box-shadow 0.2s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
-        }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 16px;
-            margin-top: 10px;
-        }
-
-        .word-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            position: relative;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .word-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--primary);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .type-tag {
-            background: var(--primary-light);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-        }
-
-        .audio-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            color: var(--text-muted);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .audio-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .word-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
-            color: #ffffff;
-            direction: ltr;
-            text-align: right;
-        }
-
-        .phonetic {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .meaning {
-            font-size: 15px;
-            color: #cbd5e1;
-            border-top: 1px dashed var(--border);
-            padding-top: 10px;
-        }
-
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-        }
-
-        .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error-msg {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            display: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 30px 15px; }
+        .app-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .search-box, .key-box { display: flex; gap: 10px; }
+        .input-field { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; color: var(--text); font-size: 15px; outline: none; }
+        .input-field:focus { border-color: var(--primary); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; border: none; border-radius: 14px; padding: 0 24px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 10px; }
+        .word-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .type-tag { background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
+        .word-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; direction: ltr; text-align: right; }
+        .phonetic { font-size: 13px; color: var(--text-muted); }
+        .meaning { font-size: 14px; color: #cbd5e1; border-top: 1px dashed var(--border); padding-top: 8px; }
+        .loader { display: none; text-align: center; padding: 30px; color: var(--text-muted); }
+        .error-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 12px; border-radius: 12px; font-size: 14px; display: none; }
     </style>
 </head>
 <body>
@@ -234,117 +47,81 @@
     <header class="header">
         <div class="brand">
             <div class="brand-icon">📚</div>
-            <div>
-                <h1>مُشتقات</h1>
-            </div>
+            <h1>مُشتقات</h1>
         </div>
     </header>
 
+    <div class="key-box">
+        <input type="password" id="apiKeyInput" class="input-field" placeholder="أدخل Gemini API Key هنا (يبدأ بـ AIzaSy)...">
+        <button class="btn-primary" onclick="saveApiKey()">حفظ المفتاح</button>
+    </div>
+
     <div class="search-box">
-        <input type="text" id="wordInput" class="input-field" placeholder="اكتب الكلمة الإنجليزية (مثال: Act, Inform, Create)..." onkeyup="handleKeyPress(event)">
+        <input type="text" id="wordInput" class="input-field" placeholder="اكتب الكلمة الإنجليزية (مثال: Act, Inform)..." onkeyup="if(event.key==='Enter') fetchWordFamily()">
         <button class="btn-primary" onclick="fetchWordFamily()">استخراج</button>
     </div>
 
     <div id="errorMsg" class="error-msg"></div>
-
-    <div id="loader" class="loader">
-        <div class="spinner"></div>
-        <span>جاري تحليل الكلمة واستخراج جميع مشتقاتها...</span>
-    </div>
-
+    <div id="loader" class="loader">جاري استخراج المشتقات...</div>
     <div id="resultsGrid" class="results-grid"></div>
 </div>
 
 <script>
-    // المفاتيح الرسمية الصالحة من Google AI Studio
-    const API_KEYS = [
-        "AIzaSyB-WGhn1HWI61PonRyRVsq190spZII8Sns",
-        "AIzaSyCTh80fhgR4vqg5dJZa6MkfoV1GkkzgYYw"
-    ];
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedKey = localStorage.getItem('gemini_api_key');
+        if (savedKey) {
+            document.getElementById('apiKeyInput').value = savedKey;
+        }
+    });
 
-    function handleKeyPress(e) {
-        if (e.key === 'Enter') fetchWordFamily();
-    }
-
-    function speakWord(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            window.speechSynthesis.speak(utterance);
+    function saveApiKey() {
+        const key = document.getElementById('apiKeyInput').value.trim();
+        if (key.startsWith('AIzaSy')) {
+            localStorage.setItem('gemini_api_key', key);
+            alert('تم حفظ المفتاح بنجاح في متصفحك!');
         } else {
-            alert('متصفحك لا يدعم خاصية النطق الصوتي.');
+            alert('يرجى إدخال مفتاح صحيح يبدأ بـ AIzaSy');
         }
-    }
-
-    async function callGeminiApi(promptText) {
-        let lastError = null;
-
-        for (let i = 0; i < API_KEYS.length; i++) {
-            const apiKey = API_KEYS[i];
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptText }] }]
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.error) {
-                    console.warn(`المفتاح رقم ${i + 1} فشل: ${data.error.message}`);
-                    lastError = data.error.message;
-                    continue;
-                }
-
-                return data;
-            } catch (err) {
-                lastError = err.message;
-            }
-        }
-
-        throw new Error(lastError || 'جميع المفاتيح واجهت مشكلة في الاتصال.');
     }
 
     async function fetchWordFamily() {
         const word = document.getElementById('wordInput').value.trim().toLowerCase();
+        const apiKey = localStorage.getItem('gemini_api_key') || document.getElementById('apiKeyInput').value.trim();
         const loader = document.getElementById('loader');
         const grid = document.getElementById('resultsGrid');
 
         showError('');
 
-        if (!word) {
-            showError('يرجى إدخال كلمة للبحث عنها.');
+        if (!apiKey) {
+            showError('يرجى إدخال مفتاح API أولاً وحفظه.');
             return;
         }
-
-        const cachedData = localStorage.getItem(`cache_${word}`);
-        if (cachedData) {
-            renderCards(JSON.parse(cachedData));
+        if (!word) {
+            showError('يرجى إدخال كلمة للبحث عنها.');
             return;
         }
 
         loader.style.display = 'block';
         grid.innerHTML = '';
 
-        const promptText = `Word family for "${word}".
-Return ONLY a JSON array of objects with keys: "type" (Arabic), "word" (English), "pronunciation" (Arabic), "meaning" (Arabic).`;
+        const promptText = `Word family for "${word}". Return ONLY a JSON array of objects with keys: "type" (Arabic), "word" (English), "pronunciation" (Arabic), "meaning" (Arabic).`;
 
         try {
-            const data = await callGeminiApi(promptText);
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+
+            const data = await response.json();
+
+            if (data.error) throw new Error(data.error.message);
 
             let rawText = data.candidates[0].content.parts[0].text.trim();
             rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-
             const derivatives = JSON.parse(rawText);
 
-            localStorage.setItem(`cache_${word}`, JSON.stringify(derivatives));
-
             renderCards(derivatives);
-
         } catch (err) {
             showError('حدث خطأ: ' + err.message);
         } finally {
@@ -359,12 +136,7 @@ Return ONLY a JSON array of objects with keys: "type" (Arabic), "word" (English)
             const card = document.createElement('div');
             card.className = 'word-card';
             card.innerHTML = `
-                <div class="card-header">
-                    <span class="type-tag">${item.type}</span>
-                    <button class="audio-btn" onclick="speakWord('${item.word}')" title="استمع للنطق">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
-                    </button>
-                </div>
+                <div class="card-header"><span class="type-tag">${item.type}</span></div>
                 <div class="word-title">${item.word}</div>
                 <div class="phonetic">النطق: ${item.pronunciation}</div>
                 <div class="meaning">${item.meaning}</div>
@@ -375,12 +147,8 @@ Return ONLY a JSON array of objects with keys: "type" (Arabic), "word" (English)
 
     function showError(msg) {
         const errorDiv = document.getElementById('errorMsg');
-        if (msg) {
-            errorDiv.innerText = msg;
-            errorDiv.style.display = 'block';
-        } else {
-            errorDiv.style.display = 'none';
-        }
+        errorDiv.innerText = msg;
+        errorDiv.style.display = msg ? 'block' : 'none';
     }
 </script>
 
