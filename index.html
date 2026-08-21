@@ -3,198 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مُشتقات - قاموس عائلات الكلمات الإنجليزية</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Readex+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>مُشتقات - قاموس الكلمات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --primary-light: #eef2ff;
             --bg: #0f172a;
             --surface: #1e293b;
+            --primary: #6366f1;
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --border: #334155;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Readex Pro', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; justify-content: center; padding: 30px 15px; }
-        .app-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .brand { display: flex; align-items: center; gap: 12px; }
-        .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        
-        .key-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; gap: 10px; align-items: center; }
-        .key-input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 13px; outline: none; }
-        
-        .search-box { display: flex; gap: 10px; }
-        .input-field { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; color: var(--text); font-size: 15px; outline: none; }
-        .input-field:focus { border-color: var(--primary); }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; border: none; border-radius: 14px; padding: 0 24px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        
-        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 10px; }
-        .word-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
-        .type-tag { background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
-        .word-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; direction: ltr; text-align: right; }
-        .phonetic { font-size: 13px; color: var(--text-muted); }
-        .meaning { font-size: 14px; color: #cbd5e1; border-top: 1px dashed var(--border); padding-top: 8px; }
-        
-        .loader { display: none; text-align: center; padding: 30px; color: var(--text-muted); }
-        .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .error-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 12px; border-radius: 12px; font-size: 14px; display: none; }
+        body { background: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 15px; }
+        .card-box { background: var(--surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+        input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; color: var(--text); outline: none; }
+        input:focus { border-color: var(--primary); }
+        button { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        button:hover { opacity: 0.9; }
+        .row { display: flex; gap: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+        .word-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .tag { background: #312e81; color: #a5b4fc; font-size: 12px; padding: 3px 8px; border-radius: 6px; width: fit-content; }
+        .word { font-size: 18px; font-weight: 700; direction: ltr; text-align: right; }
+        .error { background: #451a1a; color: #f87171; padding: 10px; border-radius: 8px; display: none; }
+        .loading { display: none; text-align: center; color: var(--text-muted); margin: 15px 0; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header class="header">
-        <div class="brand">
-            <div class="brand-icon">📚</div>
-            <h1>مُشتقات</h1>
+<div class="container">
+    <h2>📚 قاموس مشتقات الكلمات</h2>
+    
+    <!-- حفظ المفتاح محلياً -->
+    <div class="card-box">
+        <label style="font-size: 12px; color: var(--text-muted);">مفتاح API Key (يبدأ بـ AIzaSy):</label>
+        <div class="row" style="margin-top: 5px;">
+            <input type="password" id="apiKey" placeholder="أدخل المفتاح هنا..." />
+            <button onclick="saveKey()">حفظ المفتاح</button>
         </div>
-    </header>
-
-    <!-- حقل حفظ المفتاح الشخصي في متصفحك بشكل آمن دون رفعه لجيت هاب -->
-    <div class="key-box">
-        <span style="font-size: 13px; color: var(--text-muted);">مفتاح Gemini:</span>
-        <input type="password" id="apiKeyInput" class="key-input" placeholder="أدخل مفتاح AIzaSy..." onchange="saveKey()">
-        <button onclick="saveKey()" style="background: var(--border); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;">حفظ</button>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="wordInput" class="input-field" placeholder="اكتب الكلمة الإنجليزية (مثال: Act, Inform)..." onkeyup="if(event.key==='Enter') fetchWordFamily()">
-        <button class="btn-primary" onclick="fetchWordFamily()">استخراج</button>
+    <!-- البحث -->
+    <div class="row">
+        <input type="text" id="wordInput" placeholder="اكتب كلمة إنجليزية (مثال: create, act)..." onkeyup="if(event.key==='Enter') search()">
+        <button onclick="search()">بحث</button>
     </div>
 
-    <div id="errorMsg" class="error-msg"></div>
-    
-    <div id="loader" class="loader">
-        <div class="spinner"></div>
-        <div>جاري تحليل الكلمة واستخراج جميع مشتقاتها...</div>
-    </div>
-    
-    <div id="resultsGrid" class="results-grid"></div>
+    <div id="errorBox" class="error"></div>
+    <div id="loadingBox" class="loading">⏳ جاري جلب المشتقات...</div>
+    <div id="resultsGrid" class="grid"></div>
 </div>
 
 <script>
-    // تحميل المفتاح المحفوظ سابقاً
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedKey = localStorage.getItem("gemini_api_key");
-        if (savedKey) {
-            document.getElementById("apiKeyInput").value = savedKey;
-        }
-    });
+    // تحميل المفتاح من الذاكرة المحلية عند الفتح
+    window.onload = () => {
+        const saved = localStorage.getItem('GEMINI_KEY');
+        if (saved) document.getElementById('apiKey').value = saved;
+    };
 
     function saveKey() {
-        const key = document.getElementById("apiKeyInput").value.trim();
+        const key = document.getElementById('apiKey').value.trim();
         if (key) {
-            localStorage.setItem("gemini_api_key", key);
-            showError("تم حفظ المفتاح بنجاح في متصفحك!");
-            setTimeout(() => showError(""), 3000);
+            localStorage.setItem('GEMINI_KEY', key);
+            alert('تم حفظ المفتاح بنجاح في متصفحك!');
         }
     }
 
-    function speakWord(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 0.85;
-            window.speechSynthesis.speak(utterance);
-        }
-    }
-
-    async function fetchWordFamily() {
-        const word = document.getElementById('wordInput').value.trim().toLowerCase();
-        const loader = document.getElementById('loader');
+    async function search() {
+        const key = localStorage.getItem('GEMINI_KEY') || document.getElementById('apiKey').value.trim();
+        const word = document.getElementById('wordInput').value.trim();
+        const errorBox = document.getElementById('errorBox');
+        const loadingBox = document.getElementById('loadingBox');
         const grid = document.getElementById('resultsGrid');
-        const apiKey = localStorage.getItem("gemini_api_key") || document.getElementById("apiKeyInput").value.trim();
 
-        showError('');
-
-        if (!apiKey) {
-            showError('يرجى أدخال مفتاح Gemini API يبدأ بـ AIzaSy في الحقل العلوي أولاً.');
-            return;
-        }
-
-        if (!word) {
-            showError('يرجى إدخال كلمة للبحث عنها.');
-            return;
-        }
-
-        const cachedData = localStorage.getItem(`cache_${word}`);
-        if (cachedData) {
-            renderCards(JSON.parse(cachedData));
-            return;
-        }
-
-        loader.style.display = 'block';
+        errorBox.style.display = 'none';
         grid.innerHTML = '';
 
-        const promptText = `Word family for "${word}". Return ONLY a JSON array of objects with keys: "type" (Arabic part of speech like اسم, فعل), "word" (English), "pronunciation" (Arabic letters), "meaning" (Arabic translation).`;
+        if (!key) return showError('يرجى أدخال مفتاح API وحفظه أولاً.');
+        if (!word) return showError('يرجى كتابة كلمة للبحث.');
 
-        // استهداف الموديل الرسمي والمستقر
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        loadingBox.style.display = 'block';
+
+        // رابط API المضمون مع اسم الموديل المستقر
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+
+        const prompt = `Give me the full word family for the English word "${word}". Return a JSON array of objects, where each object has:
+        - "type": (noun, verb, adjective, adverb translated to Arabic like اسم, فعل, صفة, ظرف)
+        - "word": (the English derivative word)
+        - "pronunciation": (phonetic writing in Arabic letters)
+        - "meaning": (Arabic translation)`;
 
         try {
-            const response = await fetch(apiUrl, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        response_mime_type: "application/json" // يضمن إرجاع JSON نقي 100%
+                    }
+                })
             });
 
             const data = await response.json();
 
-            if (data.error) {
-                throw new Error(data.error.message);
+            if (!response.ok) {
+                throw new Error(data.error?.message || 'حدث خطأ أثناء الاتصال بالخادم');
             }
 
-            let rawText = data.candidates[0].content.parts[0].text.trim();
-            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-            
+            const rawText = data.candidates[0].content.parts[0].text;
             const derivatives = JSON.parse(rawText);
-            
-            localStorage.setItem(`cache_${word}`, JSON.stringify(derivatives));
-            renderCards(derivatives);
+
+            renderResults(derivatives);
 
         } catch (err) {
-            showError('خطأ من السيرفر: ' + err.message);
+            showError(err.message);
         } finally {
-            loader.style.display = 'none';
+            loadingBox.style.display = 'none';
         }
     }
 
-    function renderCards(derivatives) {
+    function renderResults(list) {
         const grid = document.getElementById('resultsGrid');
         grid.innerHTML = '';
-        derivatives.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'word-card';
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="type-tag">${item.type}</span>
-                    <button class="audio-btn" onclick="speakWord('${item.word.replace(/'/g, "\\'")}')" style="background:none; border:none; cursor:pointer; color:var(--text-muted);">
-                        🔊
-                    </button>
+        list.forEach(item => {
+            grid.innerHTML += `
+                <div class="word-card">
+                    <span class="tag">${item.type}</span>
+                    <div class="word">${item.word}</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">النطق: ${item.pronunciation}</div>
+                    <div style="font-size: 14px; margin-top: 5px;">${item.meaning}</div>
                 </div>
-                <div class="word-title">${item.word}</div>
-                <div class="phonetic">النطق: ${item.pronunciation}</div>
-                <div class="meaning">${item.meaning}</div>
             `;
-            grid.appendChild(card);
         });
     }
 
     function showError(msg) {
-        const errorDiv = document.getElementById('errorMsg');
-        errorDiv.innerText = msg;
-        errorDiv.style.display = msg ? 'block' : 'none';
+        const errorBox = document.getElementById('errorBox');
+        errorBox.innerText = msg;
+        errorBox.style.display = 'block';
     }
 </script>
-
 </body>
 </html>
