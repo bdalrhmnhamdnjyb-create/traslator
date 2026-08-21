@@ -187,6 +187,134 @@
         errorDiv.innerText = msg;
         errorDiv.style.display = msg ? 'block' : 'none';
     }
+    // المفاتيح المفرغة بـ Base64
+    const ENCODED_KEYS = [
+        "QUl6YVN5Q1RoODBmaGdSNHZxZzVkSlphNk1rZm9WMUdra3pnWVl3",
+        "QUl6YVN5Qi1XR2huMUhXSTYxUG9uUnlSVnNxMTkwc3BaSUk4U25z"
+    ];
+
+    const API_KEYS = ENCODED_KEYS.map(k => atob(k));
+
+    // قائمة الموديلات التي سيتم تجربة الاتصال بها الترتيب
+    const MODELS = [
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-flash-latest"
+    ];
+
+    function speakWord(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85;
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // تجربة كل مفتاح مع كل الموديلات المتاحة تلقائياً
+    async function fetchWithKeyAndModelRotation(promptText) {
+        let lastError = null;
+
+        for (let k = 0; k < API_KEYS.length; k++) {
+            const currentKey = API_KEYS[k];
+
+            for (let m = 0; m < MODELS.length; m++) {
+                const currentModel = MODELS[m];
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${currentKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        console.warn(`فشل الموديل ${currentModel} بالمفتاح رقم ${k + 1}: ${data.error.message}`);
+                        lastError = data.error.message;
+                        continue;
+                    }
+
+                    return data; // نجح الطلب
+                } catch (err) {
+                    lastError = err.message;
+                }
+            }
+        }
+
+        throw new Error(lastError || "فشل الاتصال بجميع المفاتيح والموديلات.");
+    }
+
+    async function fetchWordFamily() {
+        const word = document.getElementById('wordInput').value.trim().toLowerCase();
+        const loader = document.getElementById('loader');
+        const grid = document.getElementById('resultsGrid');
+
+        showError('');
+
+        if (!word) {
+            showError('يرجى إدخال كلمة للبحث عنها.');
+            return;
+        }
+
+        const cachedData = localStorage.getItem(`cache_${word}`);
+        if (cachedData) {
+            renderCards(JSON.parse(cachedData));
+            return;
+        }
+
+        loader.style.display = 'block';
+        grid.innerHTML = '';
+
+        const promptText = `Word family for "${word}". Return ONLY a JSON array of objects with keys: "type" (Arabic part of speech like اسم, فعل), "word" (English), "pronunciation" (Arabic letters), "meaning" (Arabic translation).`;
+
+        try {
+            const data = await fetchWithKeyAndModelRotation(promptText);
+
+            let rawText = data.candidates[0].content.parts[0].text.trim();
+            rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            const derivatives = JSON.parse(rawText);
+            
+            localStorage.setItem(`cache_${word}`, JSON.stringify(derivatives));
+            renderCards(derivatives);
+
+        } catch (err) {
+            showError('توقف الاتصال: ' + err.message + '. إذا استمرت المشكلة، يرجى إنشاء مفتاح جديد من Google AI Studio.');
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    function renderCards(derivatives) {
+        const grid = document.getElementById('resultsGrid');
+        grid.innerHTML = '';
+        derivatives.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'word-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="type-tag">${item.type}</span>
+                    <button class="audio-btn" onclick="speakWord('${item.word.replace(/'/g, "\\'")}')" style="background:none; border:none; cursor:pointer; color:var(--text-muted);">
+                        🔊
+                    </button>
+                </div>
+                <div class="word-title">${item.word}</div>
+                <div class="phonetic">النطق: ${item.pronunciation}</div>
+                <div class="meaning">${item.meaning}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function showError(msg) {
+        const errorDiv = document.getElementById('errorMsg');
+        errorDiv.innerText = msg;
+        errorDiv.style.display = msg ? 'block' : 'none';
+    }
 </script>
 
 </body>
