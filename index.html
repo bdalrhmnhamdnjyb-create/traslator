@@ -25,10 +25,15 @@
         .header { display: flex; justify-content: space-between; align-items: center; }
         .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon { width: 42px; height: 42px; background: linear-gradient(135deg, var(--primary), #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
+        .key-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; gap: 10px; align-items: center; }
+        .key-input { flex: 1; background: transparent; border: none; color: var(--text); font-size: 13px; outline: none; }
+        
         .search-box { display: flex; gap: 10px; }
         .input-field { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 18px; color: var(--text); font-size: 15px; outline: none; }
         .input-field:focus { border-color: var(--primary); }
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; border: none; border-radius: 14px; padding: 0 24px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-top: 10px; }
         .word-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; }
@@ -36,6 +41,7 @@
         .word-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; direction: ltr; text-align: right; }
         .phonetic { font-size: 13px; color: var(--text-muted); }
         .meaning { font-size: 14px; color: #cbd5e1; border-top: 1px dashed var(--border); padding-top: 8px; }
+        
         .loader { display: none; text-align: center; padding: 30px; color: var(--text-muted); }
         .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -51,6 +57,13 @@
             <h1>مُشتقات</h1>
         </div>
     </header>
+
+    <!-- حقل حفظ المفتاح الشخصي في متصفحك بشكل آمن دون رفعه لجيت هاب -->
+    <div class="key-box">
+        <span style="font-size: 13px; color: var(--text-muted);">مفتاح Gemini:</span>
+        <input type="password" id="apiKeyInput" class="key-input" placeholder="أدخل مفتاح AIzaSy..." onchange="saveKey()">
+        <button onclick="saveKey()" style="background: var(--border); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;">حفظ</button>
+    </div>
 
     <div class="search-box">
         <input type="text" id="wordInput" class="input-field" placeholder="اكتب الكلمة الإنجليزية (مثال: Act, Inform)..." onkeyup="if(event.key==='Enter') fetchWordFamily()">
@@ -68,21 +81,22 @@
 </div>
 
 <script>
-    // قائمة تحتوي على مفاتيح AQ (تُستخدم كـ Bearer Tokens) ومفاتيح AIzaSy
-    const RAW_CREDENTIALS = [
-        "AQ.Ab8RN6J_D_N2tXIuLEabKgmLVweaqjX9ltkz5ERS2FXFckvUGA",
-        "AQ.Ab8RN6IPW6ty8-o7vKdePFQlFj-0088fja5JS3bS3G4rTuOcWA",
-        "AQ.Ab8RN6KNedXCJKbiYQ9iteT8P7KygHaKvWjsLHs1uN5mAbgf1Q",
-        "AQ.Ab8RN6La5e1HMpeHYZKooTrdHagUzHGwK0LeqK6O93V5SOCvQQ",
-        "AQ.Ab8RN6J4lmqXnT7tBb4aTJmvkvA-zIDMU6VVmKxZx4Dl10_ELA",
-        "AIzaSyCTh80fhgR4vqg5dJZa6MkfoV1GkkzgYYw",
-        "AIzaSyB-WGhn1HWI61PonRyRVsq190spZII8Sns"
-    ];
+    // تحميل المفتاح المحفوظ سابقاً
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedKey = localStorage.getItem("gemini_api_key");
+        if (savedKey) {
+            document.getElementById("apiKeyInput").value = savedKey;
+        }
+    });
 
-    const MODELS = [
-        "gemini-2.0-flash",
-        "gemini-1.5-flash"
-    ];
+    function saveKey() {
+        const key = document.getElementById("apiKeyInput").value.trim();
+        if (key) {
+            localStorage.setItem("gemini_api_key", key);
+            showError("تم حفظ المفتاح بنجاح في متصفحك!");
+            setTimeout(() => showError(""), 3000);
+        }
+    }
 
     function speakWord(text) {
         if ('speechSynthesis' in window) {
@@ -94,57 +108,18 @@
         }
     }
 
-    async function fetchWithKeyAndModelRotation(promptText) {
-        let lastError = null;
-
-        for (let k = 0; k < RAW_CREDENTIALS.length; k++) {
-            const token = RAW_CREDENTIALS[k].trim();
-
-            for (let m = 0; m < MODELS.length; m++) {
-                const currentModel = MODELS[m];
-                
-                let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent`;
-                let headers = { 'Content-Type': 'application/json' };
-
-                // التمييز بين OAuth Token (AQ.) و API Key (AIzaSy)
-                if (token.startsWith("AQ.")) {
-                    headers['Authorization'] = `Bearer ${token}`;
-                } else {
-                    apiUrl += `?key=${token}`;
-                }
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.error) {
-                        console.warn(`فشل الطلب مع ${currentModel}: ${data.error.message}`);
-                        lastError = data.error.message;
-                        continue;
-                    }
-
-                    return data;
-
-                } catch (err) {
-                    lastError = err.message;
-                }
-            }
-        }
-
-        throw new Error(lastError || "تعذر الاتصال بجميع المفاتيح والموديلات.");
-    }
-
     async function fetchWordFamily() {
         const word = document.getElementById('wordInput').value.trim().toLowerCase();
         const loader = document.getElementById('loader');
         const grid = document.getElementById('resultsGrid');
+        const apiKey = localStorage.getItem("gemini_api_key") || document.getElementById("apiKeyInput").value.trim();
 
         showError('');
+
+        if (!apiKey) {
+            showError('يرجى أدخال مفتاح Gemini API يبدأ بـ AIzaSy في الحقل العلوي أولاً.');
+            return;
+        }
 
         if (!word) {
             showError('يرجى إدخال كلمة للبحث عنها.');
@@ -162,8 +137,21 @@
 
         const promptText = `Word family for "${word}". Return ONLY a JSON array of objects with keys: "type" (Arabic part of speech like اسم, فعل), "word" (English), "pronunciation" (Arabic letters), "meaning" (Arabic translation).`;
 
+        // استهداف الموديل الرسمي والمستقر
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
         try {
-            const data = await fetchWithKeyAndModelRotation(promptText);
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
 
             let rawText = data.candidates[0].content.parts[0].text.trim();
             rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -174,7 +162,7 @@
             renderCards(derivatives);
 
         } catch (err) {
-            showError('حدث خطأ أثناء الاتصال: ' + err.message);
+            showError('خطأ من السيرفر: ' + err.message);
         } finally {
             loader.style.display = 'none';
         }
