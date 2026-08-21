@@ -68,19 +68,20 @@
 </div>
 
 <script>
-    // المفاتيح مشفرة بـ Base64 لحمايتها من الكشف والإلغاء على GitHub
-    const ENCODED_KEYS = [
-        "QUl6YVN5Q1RoODBmaGdSNHZxZzVkSlphNk1rZm9WMUdra3pnWVl3",
-        "QUl6YVN5Qi1XR2huMUhXSTYxUG9uUnlSVnNxMTkwc3BaSUk4U25z"
+    // قائمة تحتوي على مفاتيح AQ (تُستخدم كـ Bearer Tokens) ومفاتيح AIzaSy
+    const RAW_CREDENTIALS = [
+        "AQ.Ab8RN6J_D_N2tXIuLEabKgmLVweaqjX9ltkz5ERS2FXFckvUGA",
+        "AQ.Ab8RN6IPW6ty8-o7vKdePFQlFj-0088fja5JS3bS3G4rTuOcWA",
+        "AQ.Ab8RN6KNedXCJKbiYQ9iteT8P7KygHaKvWjsLHs1uN5mAbgf1Q",
+        "AQ.Ab8RN6La5e1HMpeHYZKooTrdHagUzHGwK0LeqK6O93V5SOCvQQ",
+        "AQ.Ab8RN6J4lmqXnT7tBb4aTJmvkvA-zIDMU6VVmKxZx4Dl10_ELA",
+        "AIzaSyCTh80fhgR4vqg5dJZa6MkfoV1GkkzgYYw",
+        "AIzaSyB-WGhn1HWI61PonRyRVsq190spZII8Sns"
     ];
 
-    const API_KEYS = ENCODED_KEYS.map(k => atob(k));
-
-    // قائمة الموديلات التي سيتم التجربة بينها بالتتابع
     const MODELS = [
         "gemini-2.0-flash",
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-latest"
+        "gemini-1.5-flash"
     ];
 
     function speakWord(text) {
@@ -96,24 +97,33 @@
     async function fetchWithKeyAndModelRotation(promptText) {
         let lastError = null;
 
-        for (let k = 0; k < API_KEYS.length; k++) {
-            const currentKey = API_KEYS[k];
+        for (let k = 0; k < RAW_CREDENTIALS.length; k++) {
+            const token = RAW_CREDENTIALS[k].trim();
 
             for (let m = 0; m < MODELS.length; m++) {
                 const currentModel = MODELS[m];
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${currentKey}`;
+                
+                let apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent`;
+                let headers = { 'Content-Type': 'application/json' };
+
+                // التمييز بين OAuth Token (AQ.) و API Key (AIzaSy)
+                if (token.startsWith("AQ.")) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                } else {
+                    apiUrl += `?key=${token}`;
+                }
 
                 try {
                     const response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: headers,
                         body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                     });
 
                     const data = await response.json();
 
                     if (data.error) {
-                        console.warn(`خطأ بالموديل ${currentModel} والمفتاح ${k + 1}: ${data.error.message}`);
+                        console.warn(`فشل الطلب مع ${currentModel}: ${data.error.message}`);
                         lastError = data.error.message;
                         continue;
                     }
@@ -126,7 +136,7 @@
             }
         }
 
-        throw new Error(lastError || "تعذر الاتصال بالخدمة.");
+        throw new Error(lastError || "تعذر الاتصال بجميع المفاتيح والموديلات.");
     }
 
     async function fetchWordFamily() {
@@ -141,7 +151,6 @@
             return;
         }
 
-        // التخزين المؤقت عبر LocalStorage لتوفير طلبات الـ API
         const cachedData = localStorage.getItem(`cache_${word}`);
         if (cachedData) {
             renderCards(JSON.parse(cachedData));
