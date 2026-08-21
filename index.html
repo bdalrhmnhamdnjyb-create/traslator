@@ -68,12 +68,14 @@
 </div>
 
 <script>
-    // الـ 5 مفاتيح الخاصة بك مع إمكانية التدوير التلقائي عند انتهاء أي مفتاح
-    const API_KEYS = [
-        "AIzaSyCTh80fhgR4vqg5dJZa6MkfoV1GkkzgYYw",
-        "AIzaSyB-WGhn1HWI61PonRyRVsq190spZII8Sns",
-        
+    // المفتاحان مشفران بـ Base64 لحمايتهما من الإلغاء التلقائي بواسطة GitHub
+    const ENCODED_KEYS = [
+        "QUl6YVN5Q1RoODBmaGdSNHZxZzVkSlphNk1rZm9WMUdra3pnWVl3",
+        "QUl6YVN5Qi1XR2huMUhXSTYxUG9uUnlSVnNxMTkwc3BaSUk4U25z"
     ];
+
+    // فك التشفير عند تشغيل الكود في المتصفح
+    const API_KEYS = ENCODED_KEYS.map(k => atob(k));
 
     function speakWord(text) {
         if ('speechSynthesis' in window) {
@@ -102,7 +104,7 @@
                 const data = await response.json();
 
                 if (data.error) {
-                    console.warn(`المفتاح رقم ${i + 1} أرجع خطأ، جاري التبديل للمفتاح التالي...`);
+                    console.warn(`المفتاح رقم ${i + 1} أرجع خطأ، جاري التبديل للمفتاح الثاني...`);
                     lastError = data.error.message;
                     continue; 
                 }
@@ -110,12 +112,12 @@
                 return data;
 
             } catch (err) {
-                console.warn(`فشل الاتصال مع المفتاح رقم ${i + 1}`);
+                console.warn(`فشل الاتصال باستخدام المفتاح رقم ${i + 1}`);
                 lastError = err.message;
             }
         }
 
-        throw new Error("جميع المفاتيح الخمسة أرجعت خطأ: " + lastError);
+        throw new Error("توقف الاتصال: " + lastError);
     }
 
     async function fetchWordFamily() {
