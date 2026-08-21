@@ -36,7 +36,6 @@
 <div class="container">
     <h2>📚 قاموس مشتقات الكلمات</h2>
     
-    <!-- حفظ المفتاح محلياً -->
     <div class="card-box">
         <label style="font-size: 12px; color: var(--text-muted);">مفتاح API Key (يبدأ بـ AIzaSy):</label>
         <div class="row" style="margin-top: 5px;">
@@ -45,7 +44,6 @@
         </div>
     </div>
 
-    <!-- البحث -->
     <div class="row">
         <input type="text" id="wordInput" placeholder="اكتب كلمة إنجليزية (مثال: create, act)..." onkeyup="if(event.key==='Enter') search()">
         <button onclick="search()">بحث</button>
@@ -57,7 +55,9 @@
 </div>
 
 <script>
-    // تحميل المفتاح من الذاكرة المحلية عند الفتح
+    // اسم الموديل المعتمد حالياً من جوجل
+    const CURRENT_MODEL = "gemini-3.6-flash";
+
     window.onload = () => {
         const saved = localStorage.getItem('GEMINI_KEY');
         if (saved) document.getElementById('apiKey').value = saved;
@@ -86,8 +86,7 @@
 
         loadingBox.style.display = 'block';
 
-        // رابط API المضمون مع اسم الموديل المستقر
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${CURRENT_MODEL}:generateContent?key=${key}`;
 
         const prompt = `Give me the full word family for the English word "${word}". Return a JSON array of objects, where each object has:
         - "type": (noun, verb, adjective, adverb translated to Arabic like اسم, فعل, صفة, ظرف)
@@ -102,7 +101,7 @@
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
-                        response_mime_type: "application/json" // يضمن إرجاع JSON نقي 100%
+                        response_mime_type: "application/json"
                     }
                 })
             });
